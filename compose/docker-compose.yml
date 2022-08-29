@@ -1,10 +1,3 @@
-## Mark Shust's Docker Configuration for Magento
-## (https://github.com/markshust/docker-magento)
-##
-## Version 40.0.0
-
-## To use SSH, see https://github.com/markshust/docker-magento#ssh
-## Linux users, see https://github.com/markshust/docker-magento#linux
 
 version: "3"
 
@@ -52,7 +45,7 @@ services:
   db:
     image: mariadb:10.4
     container_name: "wsl_markoshust_mariadb"
-    command: --max_allowed_packet=2048M
+    command: --max_allowed_packet=2048M --max-heap-table-size=12288M --join-buffer-size=20485760
     ports:
       - "3306:3306"
     env_file: env/db.env
