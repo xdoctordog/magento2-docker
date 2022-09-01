@@ -43,8 +43,10 @@ services:
       - "host.internal.docker:host-gateway"
 
   db:
-    image: mariadb:10.4
-    container_name: "wsl_markoshust_mariadb"
+    build: ./mariadb
+    container_name: "wsl_markoshust_mariadb_custom"
+#    image: mariadb:10.4
+#    container_name: "wsl_markoshust_mariadb"
     command: --max_allowed_packet=2048M --max-heap-table-size=12288M --join-buffer-size=20485760
     ports:
       - "3306:3306"
