@@ -1,10 +1,17 @@
+## Mark Shust's Docker Configuration for Magento
+## (https://github.com/markshust/docker-magento)
+##
+## Version 40.0.0
+
+## To use SSH, see https://github.com/markshust/docker-magento#ssh
+## Linux users, see https://github.com/markshust/docker-magento#linux
 
 version: "3"
 
 services:
   app:
     image: markoshust/magento-nginx:1.18-5
-    container_name: "wsl_markoshust_nginx"
+    container_name: "markoshust_nginx"
     ports:
       - "80:8000"
       - "443:8443"
@@ -22,14 +29,19 @@ services:
       - ../xhprof_html/:/var/www/html-xhprof_html
       - ../xhprof_lib/:/var/www/xhprof_lib
       - ../xdebug-profiling/:/var/www/xdebug-profiling
+      - ../src/:/var/www/html:rw
+      - ../src/app/etc/config.php:/var/www/html/app/etc/config.php:rw
       - sockdata:/sock
       - ssldata:/etc/nginx/certs
+      - ../images/php/7.4/conf/php.ini:/usr/local/etc/php/php.ini:rw
+      - ../src/wpinvmaster_reduced.dat:/wpinvmaster_reduced.dat:rw
+      - ../src/wpinvmaster.dat:/wpinvmaster.dat:rw
 
   phpfpm:
     build: ./phpfpm
     container_name: "wsl_markoshust_phpfpm_custom"
-#    image: markoshust/magento-php:7.4-fpm-10
-#    container_name: "wsl_markoshust_phpfpm"
+    image: markoshust/magento-php:7.4-fpm-10
+    container_name: "markoshust_phpfpm"
     links:
       - db
     volumes: *appvolumes
@@ -44,31 +56,33 @@ services:
 
   db:
     build: ./mariadb
-    container_name: "wsl_markoshust_mariadb_custom"
-#    image: mariadb:10.4
-#    container_name: "wsl_markoshust_mariadb"
     command: --max_allowed_packet=2048M --max-heap-table-size=12288M --join-buffer-size=20485760
+    image: mariadb:10.4
+    container_name: "markoshust_mariadb"
+    command: --max_allowed_packet=64M
     ports:
       - "3306:3306"
     env_file: env/db.env
     volumes:
       - dbdata:/var/lib/mysql
+      - ../src/wpinvmaster_reduced.dat:/wpinvmaster_reduced.dat:rw
+      - ../src/wpinvmaster.dat:/wpinvmaster.dat:rw
 
   redis:
     image: redis:5.0-alpine
-    container_name: "wsl_markoshust_redis"
+    container_name: "markoshust_redis"
 
   elasticsearch:
     image: markoshust/magento-elasticsearch:7.9.3-1
-    container_name: "wsl_markoshust_elasticsearch"
     hostname: host.docker.internal
+    container_name: "markoshust_elasticsearch"
     ports:
       - "9200:9200"
       - "9300:9300"
     environment:
       - "discovery.type=single-node"
       ## Set custom heap size to avoid memory errors
-      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       ## Avoid test failures due to small disks
       ## More info at https://github.com/markshust/docker-magento/issues/488
       - "cluster.routing.allocation.disk.threshold_enabled=false"
@@ -76,7 +90,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.8.22-management-alpine
-    container_name: "wsl_markoshust_rabbitmq"
+    container_name: "markoshust_rabbitmq"
     ports:
       - "15672:15672"
       - "5672:5672"
@@ -87,7 +101,7 @@ services:
 
   mailcatcher:
     image: sj26/mailcatcher
-    container_name: "wsl_markoshust_mailcatcher"
+    container_name: "markoshust_mailcatcher"
     ports:
       - "1080:1080"
 

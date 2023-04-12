@@ -103,6 +103,6 @@ USER app:app
 
 VOLUME /var/www
 
-WORKDIR /var/www/html-vf
+WORKDIR /var/www/html
 
 EXPOSE 9001
