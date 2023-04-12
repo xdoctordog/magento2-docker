@@ -34,8 +34,6 @@ services:
       - sockdata:/sock
       - ssldata:/etc/nginx/certs
       - ../images/php/7.4/conf/php.ini:/usr/local/etc/php/php.ini:rw
-      - ../src/wpinvmaster_reduced.dat:/wpinvmaster_reduced.dat:rw
-      - ../src/wpinvmaster.dat:/wpinvmaster.dat:rw
 
   phpfpm:
     build: ./phpfpm
